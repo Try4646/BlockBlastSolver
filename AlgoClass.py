@@ -1,15 +1,13 @@
 class AI:
     def __init__(self, gamegrid, blockgrid, debug=False):
-        self.gamegrid = gamegrid  # 2D list representing the game board
-        self.givenblocksgrid = blockgrid  # List of 2D blocks
-        self.debug = debug  # Toggle debug output
+        self.gamegrid = gamegrid 
+        self.givenblocksgrid = blockgrid  
+        self.debug = debug 
 
     def is_valid_placement(self, block, x, y):
-        """Check if the block can be placed at position (x, y) on the current gamegrid."""
         return self.is_valid_placement_on_grid(block, x, y, self.gamegrid)
 
     def is_valid_placement_on_grid(self, block, x, y, grid):
-        """Check if the block can be placed at position (x, y) on the specified grid."""
         for i in range(len(block)):
             for j in range(len(block[i])):
                 if block[i][j] == 1:
@@ -22,7 +20,6 @@ class AI:
         return True
 
     def simulate_move(self, block, x, y):
-        """Simulate placing the block and return a new game grid."""
         if not self.is_valid_placement(block, x, y):
             return None
 
@@ -30,11 +27,10 @@ class AI:
         for i in range(len(block)):
             for j in range(len(block[i])):
                 if block[i][j] == 1:
-                    new_grid[x + i][y + j] = 2  # Use 2 to mark simulated block
+                    new_grid[x + i][y + j] = 2  
         return new_grid
 
     def evaluate_grid(self, grid):
-        """Evaluate the grid by counting complete rows and columns (Block Blast scoring style)."""
         score = 0
         size = len(grid)
 
@@ -51,7 +47,6 @@ class AI:
         return score
 
     def any_valid_placement(self, block, grid):
-        """Return True if there is at least one valid placement for the block on the grid."""
         block_height = len(block)
         block_width = len(block[0])
 
@@ -62,7 +57,6 @@ class AI:
         return False
 
     def calculate_best_move(self):
-        """Find the best move considering current score and possibility for future moves."""
         best_move = None
         best_score = -1
 
@@ -76,11 +70,10 @@ class AI:
                     if new_grid:
                         score = self.evaluate_grid(new_grid)
 
-                        # Check if other blocks can be placed after this move
                         can_continue = False
                         for other_block in self.givenblocksgrid:
                             if other_block == block:
-                                continue  # skip the current block
+                                continue  #skip
                             if self.any_valid_placement(other_block, new_grid):
                                 can_continue = True
                                 break
@@ -88,7 +81,6 @@ class AI:
                         if self.debug:
                             print(f"Trying block at ({x}, {y}) -> score: {score}, can_continue: {can_continue}")
 
-                        # Prefer higher score; among equals, prefer moves that allow future placements
                         if score > best_score or (score == best_score and can_continue):
                             best_score = score
                             best_move = (block, x, y)
@@ -96,7 +88,6 @@ class AI:
         return best_move
 
     def print_gamegrid_with_move(self, move):
-        """Print the game grid with the best move placed."""
         if not move:
             print("No valid move could be found.")
             return
